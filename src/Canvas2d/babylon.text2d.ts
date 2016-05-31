@@ -25,7 +25,7 @@
 
             engine.enableEffect(effect);
             effect.setTexture("diffuseSampler", this.fontTexture);
-            engine.bindBuffers(this.vb, this.ib, [1], 4, effect);
+            engine.bindBuffersDirectly(this.vb, this.ib, [1], 4, effect);
 
             var curAlphaMode = engine.getAlphaMode();
 
@@ -39,7 +39,7 @@
 
                 engine.updateAndBindInstancesBuffer(pid._partBuffer, null, this.instancingAttributes);
                 engine.draw(true, 0, 6, pid._partData.usedElementCount);
-                engine.unBindInstancesBuffer(pid._partBuffer, this.instancingAttributes);
+                engine.unbindInstanceAttributes();
             } else {
                 for (let i = context.partDataStartIndex; i < context.partDataEndIndex; i++) {
                     this.setupUniforms(effect, 0, pid._partData, i);

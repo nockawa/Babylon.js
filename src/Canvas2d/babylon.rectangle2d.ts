@@ -51,7 +51,7 @@
                 let effect = context.useInstancing ? this.effectFillInstanced : this.effectFill;
 
                 engine.enableEffect(effect);
-                engine.bindBuffers(this.fillVB, this.fillIB, [1], 4, effect);
+                engine.bindBuffersDirectly(this.fillVB, this.fillIB, [1], 4, effect);
                 if (context.useInstancing) {
                     if (!this.instancingFillAttributes) {
                         this.instancingFillAttributes = this.loadInstancingAttributes(Shape2D.SHAPE2D_FILLPARTID, effect);
@@ -59,7 +59,7 @@
 
                     engine.updateAndBindInstancesBuffer(pid._partBuffer, null, this.instancingFillAttributes);
                     engine.draw(true, 0, this.fillIndicesCount, pid._partData.usedElementCount);
-                    engine.unBindInstancesBuffer(pid._partBuffer, this.instancingFillAttributes);
+                    engine.unbindInstanceAttributes();
                 } else {
                     for (let i = context.partDataStartIndex; i < context.partDataEndIndex; i++) {
                         this.setupUniforms(effect, partIndex, pid._partData, i);
@@ -79,7 +79,7 @@
                 let effect = context.useInstancing ? this.effectBorderInstanced : this.effectBorder;
 
                 engine.enableEffect(effect);
-                engine.bindBuffers(this.borderVB, this.borderIB, [1], 4, effect);
+                engine.bindBuffersDirectly(this.borderVB, this.borderIB, [1], 4, effect);
                 if (context.useInstancing) {
                     if (!this.instancingBorderAttributes) {
                         this.instancingBorderAttributes = this.loadInstancingAttributes(Shape2D.SHAPE2D_BORDERPARTID, effect);
@@ -87,7 +87,7 @@
 
                     engine.updateAndBindInstancesBuffer(pid._partBuffer, null, this.instancingBorderAttributes);
                     engine.draw(true, 0, this.borderIndicesCount, pid._partData.usedElementCount);
-                    engine.unBindInstancesBuffer(pid._partBuffer, this.instancingBorderAttributes);
+                    engine.unbindInstanceAttributes();
                 } else {
                     for (let i = context.partDataStartIndex; i < context.partDataEndIndex; i++) {
                         this.setupUniforms(effect, partIndex, pid._partData, i);
