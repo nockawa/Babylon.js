@@ -72,6 +72,7 @@
             height            ?: number,
             cacheBehavior     ?: number,
             layoutEngine      ?: LayoutEngineBase | string,
+            layoutSettings    ?: {},
             isVisible         ?: boolean,
             childrenFlatZOrder?: boolean,
             marginTop         ?: number | string,

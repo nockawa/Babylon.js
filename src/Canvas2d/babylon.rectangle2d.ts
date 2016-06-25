@@ -369,6 +369,7 @@
             paddingRight      ?: number | string,
             paddingBottom     ?: number | string,
             padding           ?: string,
+            externalData      ?: [{ key: string, data: {} }],
         }) {
 
             // Avoid checking every time if the object exists

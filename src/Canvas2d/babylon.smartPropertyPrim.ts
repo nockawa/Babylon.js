@@ -158,12 +158,21 @@
      */
     export abstract  class SmartPropertyPrim implements IPropertyChanged {
 
-        constructor() {
+        constructor(settings: {
+            externalData?: [{ key: string, data: {} }],
+
+        }) {
             this._flags = 0;
             this._modelKey = null;
             this._instanceDirtyFlags = 0;
             this._levelBoundingInfo = new BoundingInfo2D();
             this.animations = new Array<Animation>();
+
+            if (settings.externalData) {
+                for (let o of settings.externalData) {
+                    this.addExternalData(o.key, o.data);
+                }
+            }
         }
 
         /**

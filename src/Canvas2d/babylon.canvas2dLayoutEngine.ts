@@ -167,4 +167,156 @@
             return false;
         }
     }
+
+    class GridDimensionDefinition {
+
+        public static Pixels = 1;
+        public static Stars = 2;
+        public static Auto = 3;
+
+        _parse(value: string, res: (v: number, vp: number, t: number) => void) {
+            let v = value.toLocaleLowerCase().trim();
+            if (v.indexOf("auto") === 0) {
+                res(null, null, GridDimensionDefinition.Auto);
+            } else if (v.indexOf("*") !== -1) {
+                let i = v.indexOf("*");
+                let w = parseFloat(v.substr(0, i));
+                res(w, null, GridDimensionDefinition.Stars);
+            } else {
+                let w = parseFloat(v);
+                res(w, w, GridDimensionDefinition.Pixels);
+            }
+        }
+    }
+
+    class RowDefinition extends GridDimensionDefinition {
+        widthPixels: number;
+        width: number;
+        widthType: number;
+
+    }
+
+    class ColumnDefinition extends GridDimensionDefinition {
+        heightPixels: number;
+        height: number;
+        heightType: number;
+    }
+
+    export class PrimitiveGridInfo {
+        constructor(row: number, column: number, rowSpan?: number, columnSpan?: number) {
+            this.row = row;
+            this.column = column;
+            this.rowSpan = (rowSpan == null) ? 1 : rowSpan;
+            this.columnSpan = (columnSpan == null) ? 1 : columnSpan;
+        }
+        row: number;
+        column: number;
+        rowSpan: number;
+        columnSpan: number;
+    }
+
+    class CellInfo {
+
+    }
+
+    @className("GridPanelLayoutEngine")
+    export class GridPanelLayoutEngine extends LayoutEngineBase {
+        constructor(settings: { rows: [{ height: string }], columns: [{ width: string }] }) {
+            super();
+            this.layoutDirtyOnPropertyChangedMask = Prim2DBase.sizeProperty.flagId;
+
+            this._cells = null;
+            this._rows = new Array<RowDefinition>();
+            this._columns = new Array<ColumnDefinition>();
+
+            if (settings.rows) {
+                for (let row of settings.rows) {
+                    let r = new RowDefinition();
+                    r._parse(row.height, (v, vp, t) => {
+                        r.width = v;
+                        r.widthPixels = vp;
+                        r.widthType = t;
+                    });
+                    this._rows.push(r);
+                }
+            }
+            if (settings.columns) {
+                for (let col of settings.columns) {
+                    let r = new ColumnDefinition();
+                    r._parse(col.width, (v, vp, t) => {
+                        r.height = v;
+                        r.heightPixels = vp;
+                        r.heightType = t;
+                    });
+                    this._columns.push(r);
+                }
+            }
+        }
+
+        private _rows: Array<RowDefinition>;
+        private _columns: Array<ColumnDefinition>;
+
+        private _cells: CellInfo[][];
+
+        public updateLayout(prim: Prim2DBase) {
+            if (prim._isFlagSet(SmartPropertyPrim.flagLayoutDirty)) {
+
+                this._updateCellsList(prim);
+                this._updateConstants(prim);
+
+
+                prim._clearFlags(SmartPropertyPrim.flagLayoutDirty);
+            }
+
+        }
+
+        get isChildPositionAllowed(): boolean {
+            return false;
+        }
+
+        private _updateCellsList(prim: Prim2DBase) {
+            if (this._cells) {
+                return;
+            }
+
+            this._cells = [];
+
+            let rl = this._rows.length;
+            for (let i = 0; i < rl; i++) {
+                this._cells[i] = [];
+
+                let cl = this._columns.length;
+                for (let j = 0; j < cl; j++) {
+                    let cell = new CellInfo();
+                    this._cells[i][j] = cell;
+                }
+            }
+
+            for (let child of prim.children) {
+                let pgi = child.getExternalData<PrimitiveGridInfo>("grid");
+                let cell = this._cells[pgi.row][pgi.column];
+            }
+
+        }
+
+        private _updateConstants(prim: Prim2DBase) {
+            let area = prim.contentArea;
+
+            // First path, stars/pixel total count
+            let totalStars = 0;
+            let totalPixels = 0;
+            for (let row of this._rows) {
+                if (row.widthType === GridDimensionDefinition.Stars) {
+                    totalStars += row.width;
+                } else if (row.widthType === GridDimensionDefinition.Pixels) {
+                    totalPixels += row.widthPixels;
+                } else if (row.widthType === GridDimensionDefinition.Auto) {
+                    totalPixels += row.widthPixels;
+                }
+            }
+
+
+
+        }
+    }
 }

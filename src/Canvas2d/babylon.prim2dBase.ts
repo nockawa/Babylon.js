@@ -1305,6 +1305,7 @@
             opacity?: number,
             origin?: Vector2,
             layoutEngine?: LayoutEngineBase | string,
+            layoutSettings?: {},
             isVisible?: boolean,
             childrenFlatZOrder?: boolean,
             marginTop?: number | string,
@@ -1328,7 +1329,7 @@
             }
 
             // BASE CLASS CALL
-            super();
+            super(settings);
 
             // Fetch the owner, parent. There're many ways to do it and we can end up with nothing for both
             let owner: Canvas2D;
@@ -1443,6 +1444,8 @@
                         this.layoutEngine = StackPanelLayoutEngine.Horizontal;
                     } else if (name.indexOf("verticalstackpanel") === 0) {
                         this.layoutEngine = StackPanelLayoutEngine.Vertical;
+                    } else if (name.indexOf("gridpanel") === 0) {
+                        this.layoutEngine = new GridPanelLayoutEngine(<any>settings.layoutSettings);
                     }
                 } else if (settings.layoutEngine instanceof LayoutEngineBase) {
                     this.layoutEngine = <LayoutEngineBase>settings.layoutEngine;
