@@ -977,8 +977,10 @@
             let h = size.height;
             let invZBias = 1 / zBias;
 
-            let tx = new Vector4(t.m[0] * 2 / w, t.m[2] * 2 / w, 0, ((t.m[4] + offX) * 2 / w) - 1);
-            let ty = new Vector4(t.m[1] * 2 / h, t.m[3] * 2 / h, 0, ((t.m[5] + offY) * 2 / h) - 1);
+            //let tx = new Vector4(t.m[0] * 2 / w, t.m[2] * 2 / w, 0, ((t.m[4] + offX) * 2 / w) - 1);
+            //let ty = new Vector4(t.m[1] * 2 / h, t.m[3] * 2 / h, 0, ((t.m[5] + offY) * 2 / h) - 1);
+            let tx = new Vector4(t.m[0], t.m[2], 0, t.m[4] + offX);
+            let ty = new Vector4(t.m[1], t.m[3], 0, t.m[5] + offY);
 
             part.renderingInfo = new Vector3(w, h, this.alignToPixel ? 1 : 0);
             part.transformX = tx;

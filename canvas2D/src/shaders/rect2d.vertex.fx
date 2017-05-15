@@ -206,15 +206,14 @@ void main(void) {
 
 	float x = dot(pos, transformX);
 	float y = dot(pos, transformY);
-	if (renderingInfo.z == 1.0) {
-		float rw = renderingInfo.x;
-		float rh = renderingInfo.y;
-		float irw = 2.0 / rw;
-		float irh = 2.0 / rh;
 
-		x = (floor((x / irw) + 0.5) * irw) + irw / 2.0;
-		y = (floor((y / irh) + 0.5) * irh) + irh / 2.0;
+	if (renderingInfo.z == 1.0) {
+		pos.x = floor(pos.x);
+		pos.y = floor(pos.y);
 	}
+
+	x = (x * 2.0 / renderingInfo.x) - 1.0;
+	y = (y * 2.0 / renderingInfo.y) - 1.0;
 
 	gl_Position = vec4(x, y, zBias.x, 1);
 }

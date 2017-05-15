@@ -9,7 +9,7 @@
 attribute float index;
 
 att vec2 topLeftUV;
-att vec2 sizeUV;
+att vec2 spriteSize;
 #ifdef Scale9
 att vec2 scaleFactor;
 #endif
@@ -49,43 +49,40 @@ void main(void) {
 	float invertY = properties.y;
 	float alignToPixel = properties.z;
 
+	vec2 sizeUV = spriteSize / textureSize;
+	vec2 tt = 1.0 / textureSize;
+	vec2 ts = spriteSize / textureSize;
+
 	// Left/Top
 	if (index == 0.0) {
 		pos2 = vec2(0.0, 0.0);
-		vUV = vec2(topLeftUV.x + (frame*sizeUV.x), topLeftUV.y);
+		vUV = vec2(topLeftUV.x + (frame*ts.x)/* + 0.5*tt.x*/, topLeftUV.y);
 	}
 
 	// Left/Bottom
 	else if (index == 1.0) {
 		pos2 = vec2(0.0,  1.0);
-		vUV = vec2(topLeftUV.x + (frame*sizeUV.x), (topLeftUV.y + sizeUV.y));
+		vUV = vec2(topLeftUV.x + (frame*ts.x) /*+ 0.5*tt.x*/, (topLeftUV.y + sizeUV.y));
 	}
 
 	// Right/Bottom
 	else if (index == 2.0) {
 		pos2 = vec2( 1.0,  1.0);
-		vUV = vec2(topLeftUV.x + sizeUV.x + (frame*sizeUV.x), (topLeftUV.y + sizeUV.y));
+		vUV = vec2(topLeftUV.x + (frame*ts.x) + (spriteSize.x-0.0)*tt.x /*+ 0.5*tt.x*/, (topLeftUV.y + sizeUV.y));
 	}
 
 	// Right/Top
 	else if (index == 3.0) {
 		pos2 = vec2( 1.0, 0.0);
-		vUV = vec2(topLeftUV.x + sizeUV.x + (frame*sizeUV.x), topLeftUV.y);
+		vUV = vec2(topLeftUV.x + (frame*ts.x) + (spriteSize.x - 0.0)*tt.x /*+ 0.5*tt.x*/, topLeftUV.y);
 	}
 
 	if (invertY == 1.0) {
-		vUV.y = 1.0 - vUV.y;
+		vUV.y = (1.0 - 0.5/textureSize.y) - vUV.y;
 	}
 
-	//vUV.x += 0.5 / textureSize.x;
-
 	vec4 pos;
-	//if (alignToPixel == 1.0)
-	//{
-	//	pos.xy = floor(pos2.xy * sizeUV * textureSize);
-	//} else {
-		pos.xy = pos2.xy * sizeUV * textureSize;
-	//}
+	pos.xy = pos2.xy * spriteSize;
 
 #ifdef Scale9
 	if (invertY == 1.0) {
@@ -105,17 +102,16 @@ void main(void) {
 	pos.z = 1.0;
 	pos.w = 1.0;
 
-	float x = dot(pos, transformX);
-	float y = dot(pos, transformY);
-	if (renderingInfo.z == 1.0) {
-		float rw = renderingInfo.x;
-		float rh = renderingInfo.y;
-		float irw = 2.0 / rw;
-		float irh = 2.0 / rh;
+	float x = dot(pos, transformX);		// Transform x coordinate, still in canvas space
+	float y = dot(pos, transformY);		// Transform y coordinate, still in canvas space
 
-		x = (floor((x / irw)) * irw) + irw / 2.0;
-		y = (floor((y / irh)) * irh) + irh / 2.0;
+	if (renderingInfo.z == 1.0) {
+		pos.x = floor(pos.x);
+		pos.y = floor(pos.y);
 	}
+
+	x = (x * 2.0 / renderingInfo.x) - 1.0;	// 'project', switch to -1;1 space renderingInfo.x/y are rendering target's width/height
+	y = (y * 2.0 / renderingInfo.y) - 1.0;
 
 	gl_Position = vec4(x, y, zBias.x, 1.0);
 }	

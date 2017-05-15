@@ -467,7 +467,7 @@
 
                 if (Sprite2D.layoutConstructMode) {
                     d.topLeftUV = Vector2.Zero();
-                    d.sizeUV = Vector2.Zero();
+                    d.spriteSize = Vector2.Zero();
                     d.properties = Vector3.Zero();
                     d.textureSize = Vector2.Zero();
                     d.scaleFactor = Vector2.Zero();
@@ -481,7 +481,7 @@
                     let ssf = this.actualScale;
                     d.topLeftUV = new Vector2(sl.x / ts.width, sl.y / ts.height);
                     let suv = new Vector2(ss.width / ts.width, ss.height / ts.height);
-                    d.sizeUV = suv;
+                    d.spriteSize = new Vector2(ss.width, ss.height);
                     d.scaleFactor = ssf;
 
                     Sprite2D._prop.x = this.spriteFrame;
@@ -556,10 +556,10 @@
         }
 
         @instanceData()
-        get sizeUV(): Vector2 {
+        get spriteSize(): Vector2 {
             return null;
         }
-        set sizeUV(value: Vector2) {
+        set spriteSize(value: Vector2) {
         }
 
         @instanceData(Sprite2D.SHAPE2D_CATEGORY_SCALE9)
