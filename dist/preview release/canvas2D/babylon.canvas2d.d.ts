@@ -3664,7 +3664,7 @@ declare module BABYLON {
     class Sprite2DInstanceData extends InstanceDataBase {
         constructor(partId: number);
         topLeftUV: Vector2;
-        sizeUV: Vector2;
+        spriteSize: Vector2;
         scaleFactor: Vector2;
         textureSize: Vector2;
         properties: Vector3;
